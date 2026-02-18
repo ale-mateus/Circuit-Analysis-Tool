@@ -43,6 +43,14 @@ void Circuit::readNetlist(const std::string& filename) {
         nodeMap[node] = index++;
     }
 
+    int vIndex = 0;
+
+    for (int i = 0; i < branches.size(); i++) {
+        if (branches[i].isVoltageSource) {
+            voltageSourceMap[i] = vIndex++;
+        }
+    }
+
 }
 
 int Circuit::getNumBranches() const {
@@ -109,6 +117,56 @@ void Circuit::buildConductanceMatrix(Matrix& G) const {
                 G(i, j) -= g;
                 G(j, i) -= g;
             }
+        }
+    }
+}
+
+void Circuit::buildMNAMatrix(Matrix& A) const {
+
+    int N = getNumNodes();
+    int M = getNumVoltageSources();
+
+    // First build G portion
+    buildConductanceMatrix(A);
+
+    // Now build B and C
+    for (int k = 0; k < branches.size(); k++) {
+
+        if (branches[k].isVoltageSource) {
+
+            int vIdx = voltageSourceMap.at(k);
+
+            int row = N + vIdx;  // bottom rows
+            int col = N + vIdx;  // bottom-right block (stays zero)
+
+            int a = branches[k].src;
+            int b = branches[k].dest;
+
+            if (a != 0) {
+                int i = nodeMap.at(a);
+                A(i, N + vIdx) = 1;      // B block
+                A(N + vIdx, i) = 1;      // C block
+            }
+
+            if (b != 0) {
+                int j = nodeMap.at(b);
+                A(j, N + vIdx) = -1;     // B block
+                A(N + vIdx, j) = -1;     // C block
+            }
+        }
+    }
+}
+
+void Circuit::buildRHS(std::vector<double>& z) const {
+
+    int N = getNumNodes();
+
+    for (int k = 0; k < branches.size(); k++) {
+
+        if (branches[k].isVoltageSource) {
+
+            int vIdx = voltageSourceMap.at(k);
+            z[N + vIdx] = branches[k].value;
         }
     }
 }

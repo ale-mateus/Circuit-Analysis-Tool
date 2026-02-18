@@ -1,34 +1,55 @@
 // Alejandro Mateus
-// Controls program flow
-// Calls all major functions
+// Main driver for Circuit Analysis Tool
 
 #include <iostream>
+#include <fstream>
+#include <vector>
 #include "Circuit.h"
 #include "Matrix.h"
 
 int main() {
 
     Circuit circuit;
+
+    // Read netlist
     circuit.readNetlist("netlist.txt");
 
-    std::cout << "Branches: " << circuit.getNumBranches() << std::endl;
-    std::cout << "Nodes (excluding ground): " << circuit.getNumNodes() << std::endl;
-    std::cout << "Voltage Sources: " << circuit.getNumVoltageSources() << std::endl;
-    std::cout << "System size: " << circuit.getSystemSize() << std::endl;
+    int size = circuit.getSystemSize();
 
-    // Create conductance matrix
-    int N = circuit.getNumNodes();
-    Matrix G(N, N);
+    // Build MNA matrix
+    Matrix A(size, size);
+    circuit.buildMNAMatrix(A);
 
-    circuit.buildConductanceMatrix(G);
+    // Build RHS vector
+    std::vector<double> z(size, 0.0);
+    circuit.buildRHS(z);
 
-    std::cout << "\nConductance Matrix (G):\n";
-    for (int i = 0; i < G.getRows(); i++) {
-        for (int j = 0; j < G.getCols(); j++) {
-            std::cout << G(i, j) << " ";
-        }
-        std::cout << std::endl;
+    // Solve system
+    std::vector<double> solution = A.solve(z);
+
+    // Open output file
+    std::ofstream outFile("output.txt");
+
+    if (!outFile) {
+        std::cerr << "Error opening output file.\n";
+        return 1;
     }
+
+    int N = circuit.getNumNodes();
+    int M = circuit.getNumVoltageSources();
+
+    // Write node voltages
+    outFile << "Node Voltages:\n";
+    for (int i = 0; i < N; i++) {
+        outFile << "V(" << i + 1 << ") = " << solution[i] << "\n";
+    }
+
+    outFile << "\nVoltage Source Currents:\n";
+    for (int i = 0; i < M; i++) {
+        outFile << "I(V" << i + 1 << ") = " << solution[N + i] << "\n";
+    }
+
+    outFile.close();
 
     return 0;
 }

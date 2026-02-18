@@ -21,6 +21,7 @@ class Circuit {
 private:
     vector<Branch> branches;
     map<int, int> nodeMap;
+    map<int, int> voltageSourceMap;
 
 public:
     void readNetlist(const string& filename);
@@ -29,6 +30,8 @@ public:
     int getNumVoltageSources() const;
     int getSystemSize() const;
     void buildConductanceMatrix(Matrix& G) const;
+    void buildMNAMatrix(Matrix& A) const;
+    void buildRHS(std::vector<double>& z) const;
 };
 
 #endif

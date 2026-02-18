@@ -3,11 +3,13 @@
 
 #include <vector>
 
+using namespace std;
+
 class Matrix {
 private:
     int rows;
     int cols;
-    std::vector<std::vector<double>> data;
+    vector<vector<double>> data;
 
 public:
     Matrix(int r, int c);
@@ -16,6 +18,8 @@ public:
 
     int getRows() const;
     int getCols() const;
+    
+    vector<double> solve(const vector<double>& b);
 };
 
 #endif

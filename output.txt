@@ -1,0 +1,6 @@
+Node Voltages:
+V(1) = 5
+V(2) = 3.33333
+
+Voltage Source Currents:
+I(V1) = -0.166667
