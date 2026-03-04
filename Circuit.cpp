@@ -170,3 +170,15 @@ void Circuit::buildRHS(std::vector<double>& z) const {
         }
     }
 }
+
+const std::vector<Branch>& Circuit::getBranches() const {
+    return branches;
+}
+
+int Circuit::getNodeIndex(int node) const {
+    return nodeMap.at(node);
+}
+
+int Circuit::getVoltageSourceIndex(int branchIndex) const {
+    return voltageSourceMap.at(branchIndex);
+}

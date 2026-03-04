@@ -32,6 +32,9 @@ public:
     void buildConductanceMatrix(Matrix& G) const;
     void buildMNAMatrix(Matrix& A) const;
     void buildRHS(std::vector<double>& z) const;
+    const std::vector<Branch>& getBranches() const;
+    int getNodeIndex(int node) const;
+    int getVoltageSourceIndex(int branchIndex) const;
 };
 
 #endif
