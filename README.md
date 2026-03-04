@@ -75,9 +75,10 @@ Example output:
 
 ## Bonus
 
-Sparse matrix implementation: **Not implemented**
+Sparse matrix implementation: Implemented.
 
-The program uses a dense matrix structure for solving the MNA system.
+The MNA matrix is stored using a vector of unordered_maps,
+so only nonzero elements are stored in memory.
 
 ---
 

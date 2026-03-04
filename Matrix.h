@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <vector>
+#include <unordered_map>
 
 using namespace std;
 
@@ -9,7 +10,7 @@ class Matrix {
 private:
     int rows;
     int cols;
-    vector<vector<double>> data;
+    vector<std::unordered_map<int, double>> data;
 
 public:
     Matrix(int r, int c);
